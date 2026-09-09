@@ -15,7 +15,7 @@ Built for Google Solution Challenge
 - Fully responsive dark UI
 
 ## Live Demo
-https://your-project-name.vercel.app
+https://digital-manager-after-life.vercel.app/
 
 ## Note
 This is a frontend prototype. The production version 
