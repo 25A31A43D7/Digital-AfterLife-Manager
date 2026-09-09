@@ -1,1007 +1,2840 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Afterlife Manager</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0f1117;
-    --bg2: #161b27;
-    --bg3: #1e2535;
-    --card: #1a2030;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.13);
-    --teal: #2dd4c0;
-    --teal-dim: rgba(45,212,192,0.12);
-    --teal-dim2: rgba(45,212,192,0.06);
-    --amber: #f59e0b;
-    --red: #f87171;
-    --green: #4ade80;
-    --text: #e8eaf0;
-    --text2: #8b93a8;
-    --text3: #5a6278;
-    --serif: 'DM Serif Display', serif;
-    --sans: 'DM Sans', sans-serif;
-    --radius: 14px;
-    --radius-sm: 8px;
-    --shadow: 0 4px 32px rgba(0,0,0,0.4);
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Digital Afterlife Manager — Secure Your Legacy</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-main: #0f1117;
+      --bg-sidebar: #131722;
+      --card-bg: #1a2030;
+      --card-border: #263047;
+      --card-hover: #21293d;
+      --teal: #2dd4c0;
+      --teal-hover: #14b8a6;
+      --teal-dim: rgba(45, 212, 192, 0.12);
+      --teal-glow: rgba(45, 212, 192, 0.25);
+      --text-white: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+      --danger: #f43f5e;
+      --danger-dim: rgba(244, 63, 94, 0.14);
+      --amber: #f59e0b;
+      --amber-dim: rgba(245, 158, 11, 0.14);
+      --purple: #a855f7;
+      --purple-dim: rgba(168, 85, 247, 0.14);
+      --coral: #fb7185;
+      --coral-dim: rgba(251, 113, 133, 0.14);
+      --blue: #38bdf8;
+      --blue-dim: rgba(56, 189, 248, 0.14);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-width: 260px;
+      --topbar-height: 64px;
+      --bottombar-height: 60px;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      --focus-ring: 0 0 0 3px rgba(45, 212, 192, 0.45);
+    }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  /* ─── AUTH SCREEN ─── */
-  #auth-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(45,212,192,0.08) 0%, transparent 70%), var(--bg);
-    padding: 24px;
-  }
-  .auth-box {
-    background: var(--card);
-    border: 1px solid var(--border2);
-    border-radius: 20px;
-    padding: 48px 40px;
-    width: 100%;
-    max-width: 420px;
-    box-shadow: var(--shadow);
-    animation: fadeUp 0.5s ease;
-  }
-  .auth-logo { text-align: center; margin-bottom: 32px; }
-  .auth-logo .logo-icon {
-    width: 56px; height: 56px;
-    background: var(--teal-dim);
-    border: 1px solid rgba(45,212,192,0.3);
-    border-radius: 16px;
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 24px;
-    margin-bottom: 16px;
-  }
-  .auth-logo h1 { font-family: var(--serif); font-size: 26px; color: var(--text); }
-  .auth-logo p { font-size: 13px; color: var(--text2); margin-top: 6px; }
-  .tab-row { display: flex; background: var(--bg3); border-radius: 10px; padding: 4px; margin-bottom: 28px; }
-  .tab-btn { flex: 1; padding: 8px; border: none; background: transparent; color: var(--text2); font-family: var(--sans); font-size: 14px; font-weight: 500; border-radius: 7px; cursor: pointer; transition: all 0.2s; }
-  .tab-btn.active { background: var(--card); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-  .form-group { margin-bottom: 16px; }
-  .form-label { display: block; font-size: 13px; color: var(--text2); margin-bottom: 7px; font-weight: 500; }
-  .form-input {
-    width: 100%; padding: 11px 14px;
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: var(--radius-sm); color: var(--text);
-    font-family: var(--sans); font-size: 14px;
-    transition: border-color 0.2s;
-    outline: none;
-  }
-  .form-input:focus { border-color: var(--teal); }
-  .form-input::placeholder { color: var(--text3); }
-  .btn-primary {
-    width: 100%; padding: 12px;
-    background: var(--teal); color: #0a1a18;
-    border: none; border-radius: var(--radius-sm);
-    font-family: var(--sans); font-size: 15px; font-weight: 600;
-    cursor: pointer; transition: opacity 0.2s, transform 0.1s;
-    margin-top: 8px;
-  }
-  .btn-primary:hover { opacity: 0.9; }
-  .btn-primary:active { transform: scale(0.99); }
-  .auth-hint { text-align: center; font-size: 12px; color: var(--text3); margin-top: 16px; }
+    html, body {
+      min-height: 100%;
+      background-color: var(--bg-main);
+      color: var(--text-white);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
-  /* ─── APP SHELL ─── */
-  #app { display: none; flex-direction: column; min-height: 100vh; }
-  .topbar {
-    height: 62px; background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center;
-    padding: 0 24px; gap: 16px;
-    position: sticky; top: 0; z-index: 100;
-  }
-  .topbar-logo { font-family: var(--serif); font-size: 19px; color: var(--text); flex: 1; }
-  .topbar-logo span { color: var(--teal); }
-  .topbar-user { display: flex; align-items: center; gap: 10px; }
-  .avatar {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: var(--teal-dim); border: 1px solid rgba(45,212,192,0.3);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 600; color: var(--teal);
-  }
-  .topbar-name { font-size: 14px; color: var(--text2); }
-  .btn-logout {
-    padding: 6px 14px; background: transparent;
-    border: 1px solid var(--border2); border-radius: 7px;
-    color: var(--text2); font-family: var(--sans); font-size: 13px;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .btn-logout:hover { border-color: var(--red); color: var(--red); }
+    h1, h2, h3, .brand-font {
+      font-family: 'Cinzel', Georgia, serif;
+      letter-spacing: 0.02em;
+    }
 
-  .app-body { display: flex; flex: 1; }
+    button, input, select, textarea {
+      font-family: inherit;
+      color: inherit;
+    }
 
-  /* ─── SIDEBAR ─── */
-  .sidebar {
-    width: 220px; background: var(--bg2);
-    border-right: 1px solid var(--border);
-    padding: 20px 12px;
-    display: flex; flex-direction: column;
-    gap: 4px;
-    position: sticky; top: 62px; height: calc(100vh - 62px);
-    overflow-y: auto;
-  }
-  .sidebar-label { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 10px; margin: 12px 0 6px; }
-  .nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 12px; border-radius: var(--radius-sm);
-    color: var(--text2); font-size: 14px; font-weight: 500;
-    cursor: pointer; transition: all 0.15s; border: none; background: none;
-    width: 100%; text-align: left;
-  }
-  .nav-item:hover { background: var(--bg3); color: var(--text); }
-  .nav-item.active { background: var(--teal-dim); color: var(--teal); }
-  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
-  .badge { margin-left: auto; background: var(--teal); color: #0a1a18; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 20px; }
+    /* Accessibility Focus Outline */
+    :focus-visible {
+      outline: 2px solid var(--teal);
+      outline-offset: 2px;
+    }
 
-  /* ─── MAIN CONTENT ─── */
-  .main { flex: 1; padding: 32px; overflow-y: auto; }
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-main);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2b354d;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3c4969;
+    }
 
-  /* ─── PAGES ─── */
-  .page { display: none; animation: fadeIn 0.25s ease; }
-  .page.active { display: block; }
+    /* Skip link for screen reader & keyboard accessibility */
+    .skip-to-content {
+      position: absolute;
+      top: -60px;
+      left: 16px;
+      background: var(--teal);
+      color: #0b111e;
+      padding: 10px 16px;
+      font-weight: 700;
+      border-radius: 6px;
+      z-index: 10000;
+      transition: top 0.2s ease;
+      text-decoration: none;
+    }
+    .skip-to-content:focus {
+      top: 16px;
+    }
 
-  .page-header { margin-bottom: 28px; }
-  .page-header h2 { font-family: var(--serif); font-size: 28px; color: var(--text); }
-  .page-header p { font-size: 14px; color: var(--text2); margin-top: 6px; }
+    /* ========================================================
+       SCREEN 1: AUTHENTICATION (Fluid Full-Screen)
+       ======================================================== */
+    #auth-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+      background: radial-gradient(circle at 50% 20%, #1b2336 0%, var(--bg-main) 75%);
+    }
 
-  /* ─── DASHBOARD ─── */
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
-  .stat-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 22px;
-    transition: border-color 0.2s;
-  }
-  .stat-card:hover { border-color: var(--border2); }
-  .stat-icon { font-size: 22px; margin-bottom: 12px; }
-  .stat-val { font-family: var(--serif); font-size: 32px; color: var(--text); }
-  .stat-label { font-size: 13px; color: var(--text2); margin-top: 4px; }
-  .status-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
-  }
-  .status-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
-  .status-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .status-row:last-child { border-bottom: none; }
-  .status-label { font-size: 13px; color: var(--text2); }
-  .status-val { font-size: 13px; font-weight: 500; color: var(--text); }
-  .pill {
-    padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
-  }
-  .pill-green { background: rgba(74,222,128,0.1); color: var(--green); }
-  .pill-amber { background: rgba(245,158,11,0.1); color: var(--amber); }
-  .pill-teal { background: var(--teal-dim); color: var(--teal); }
-  .quick-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-  .btn-action {
-    padding: 10px 18px; background: var(--bg3);
-    border: 1px solid var(--border2); border-radius: var(--radius-sm);
-    color: var(--text); font-family: var(--sans); font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .btn-action:hover { border-color: var(--teal); color: var(--teal); }
+    .auth-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      width: 100%;
+      max-width: 440px;
+      border-radius: var(--radius);
+      padding: clamp(24px, 5vw, 40px) clamp(20px, 4vw, 36px);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
 
-  /* ─── VAULT ─── */
-  .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-  .search-input {
-    flex: 1; min-width: 200px; padding: 9px 14px;
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: var(--radius-sm); color: var(--text);
-    font-family: var(--sans); font-size: 14px; outline: none;
-    transition: border-color 0.2s;
-  }
-  .search-input:focus { border-color: var(--teal); }
-  .search-input::placeholder { color: var(--text3); }
-  .filter-select {
-    padding: 9px 12px; background: var(--bg3);
-    border: 1px solid var(--border2); border-radius: var(--radius-sm);
-    color: var(--text2); font-family: var(--sans); font-size: 13px;
-    cursor: pointer; outline: none;
-  }
-  .btn-add {
-    padding: 9px 18px; background: var(--teal); color: #0a1a18;
-    border: none; border-radius: var(--radius-sm);
-    font-family: var(--sans); font-size: 13px; font-weight: 600;
-    cursor: pointer; white-space: nowrap; transition: opacity 0.2s;
-  }
-  .btn-add:hover { opacity: 0.9; }
-  .vault-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
-  .vault-item {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 18px;
-    transition: border-color 0.2s, transform 0.15s;
-    position: relative;
-  }
-  .vault-item:hover { border-color: var(--border2); transform: translateY(-1px); }
-  .vault-item-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
-  .vault-cat-icon {
-    width: 36px; height: 36px; border-radius: 9px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; flex-shrink: 0;
-  }
-  .cat-password { background: rgba(45,212,192,0.1); }
-  .cat-note { background: rgba(245,158,11,0.1); }
-  .cat-document { background: rgba(139,92,246,0.1); }
-  .cat-message { background: rgba(248,113,113,0.1); }
-  .vault-title { font-size: 15px; font-weight: 600; color: var(--text); }
-  .vault-cat { font-size: 12px; color: var(--text3); margin-top: 2px; }
-  .vault-preview {
-    font-size: 13px; color: var(--text2);
-    background: var(--bg3); border-radius: 7px; padding: 8px 10px;
-    font-family: monospace; letter-spacing: 0.05em;
-    margin-bottom: 10px;
-  }
-  .vault-footer { display: flex; align-items: center; justify-content: space-between; }
-  .vault-date { font-size: 11px; color: var(--text3); }
-  .btn-icon {
-    background: none; border: none; color: var(--text3);
-    cursor: pointer; font-size: 15px; padding: 4px;
-    border-radius: 5px; transition: all 0.15s;
-  }
-  .btn-icon:hover { color: var(--red); background: rgba(248,113,113,0.1); }
+    .auth-brand-icon {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(45, 212, 192, 0.25), #111827);
+      border: 1.5px solid var(--teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 24px var(--teal-glow);
+    }
 
-  /* ─── MODAL ─── */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 200; padding: 24px;
-    opacity: 0; pointer-events: none; transition: opacity 0.2s;
-  }
-  .modal-overlay.show { opacity: 1; pointer-events: all; }
-  .modal {
-    background: var(--card); border: 1px solid var(--border2);
-    border-radius: 18px; padding: 32px;
-    width: 100%; max-width: 480px;
-    transform: translateY(16px); transition: transform 0.2s;
-    max-height: 90vh; overflow-y: auto;
-  }
-  .modal-overlay.show .modal { transform: translateY(0); }
-  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-  .modal-header h3 { font-family: var(--serif); font-size: 22px; }
-  .btn-close { background: none; border: none; color: var(--text2); font-size: 20px; cursor: pointer; padding: 4px; }
-  .modal-footer { display: flex; gap: 10px; margin-top: 24px; }
-  .btn-cancel {
-    flex: 1; padding: 11px;
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: var(--radius-sm); color: var(--text2);
-    font-family: var(--sans); font-size: 14px; cursor: pointer;
-  }
-  .btn-submit {
-    flex: 2; padding: 11px;
-    background: var(--teal); color: #0a1a18;
-    border: none; border-radius: var(--radius-sm);
-    font-family: var(--sans); font-size: 14px; font-weight: 600;
-    cursor: pointer; transition: opacity 0.2s;
-  }
-  .btn-submit:hover { opacity: 0.9; }
-  .form-textarea {
-    width: 100%; padding: 11px 14px;
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: var(--radius-sm); color: var(--text);
-    font-family: var(--sans); font-size: 14px; resize: vertical;
-    min-height: 90px; outline: none; transition: border-color 0.2s;
-  }
-  .form-textarea:focus { border-color: var(--teal); }
-  .form-select {
-    width: 100%; padding: 11px 14px;
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: var(--radius-sm); color: var(--text);
-    font-family: var(--sans); font-size: 14px; outline: none;
-    transition: border-color 0.2s; cursor: pointer;
-  }
-  .form-select:focus { border-color: var(--teal); }
+    .auth-title {
+      font-size: clamp(1.4rem, 4vw, 1.7rem);
+      margin-bottom: 4px;
+      color: #ffffff;
+    }
 
-  /* ─── CONTACTS ─── */
-  .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
-  .contact-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px;
-    display: flex; align-items: flex-start; gap: 14px;
-    transition: border-color 0.2s;
-  }
-  .contact-card:hover { border-color: var(--border2); }
-  .contact-avatar {
-    width: 44px; height: 44px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; font-weight: 700; flex-shrink: 0;
-  }
-  .contact-info { flex: 1; }
-  .contact-name { font-size: 15px; font-weight: 600; color: var(--text); }
-  .contact-email { font-size: 13px; color: var(--text2); margin-top: 2px; }
-  .contact-rel { display: inline-block; margin-top: 8px; padding: 3px 10px; background: var(--bg3); border-radius: 20px; font-size: 12px; color: var(--text2); }
-  .contact-status { font-size: 11px; color: var(--text3); margin-top: 6px; }
+    .auth-tagline {
+      font-size: 0.85rem;
+      color: var(--teal);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
 
-  /* ─── ACTIVITY LOG ─── */
-  .log-list { display: flex; flex-direction: column; gap: 8px; }
-  .log-item {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 14px 18px;
-    display: flex; align-items: center; gap: 16px;
-    transition: border-color 0.15s;
-  }
-  .log-item:hover { border-color: var(--border2); }
-  .log-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .log-action { font-size: 14px; color: var(--text); flex: 1; }
-  .log-meta { font-size: 12px; color: var(--text3); white-space: nowrap; text-align: right; }
-  .log-meta .log-user { font-size: 12px; color: var(--text2); }
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #111522;
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      margin-bottom: 24px;
+      border: 1px solid var(--card-border);
+    }
 
-  /* ─── SETTINGS ─── */
-  .settings-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
-  }
-  .settings-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--text); }
-  .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
-  .setting-row:last-child { border-bottom: none; }
-  .setting-info h4 { font-size: 14px; font-weight: 500; color: var(--text); }
-  .setting-info p { font-size: 12px; color: var(--text2); margin-top: 3px; }
-  .toggle {
-    position: relative; width: 42px; height: 24px;
-    background: var(--bg3); border-radius: 12px;
-    cursor: pointer; transition: background 0.2s; border: none; flex-shrink: 0;
-  }
-  .toggle::after {
-    content: ''; position: absolute;
-    width: 18px; height: 18px; border-radius: 50%;
-    background: var(--text2); top: 3px; left: 3px;
-    transition: transform 0.2s, background 0.2s;
-  }
-  .toggle.on { background: var(--teal-dim); border: 1px solid rgba(45,212,192,0.3); }
-  .toggle.on::after { transform: translateX(18px); background: var(--teal); }
-  .number-input {
-    width: 80px; padding: 8px 12px;
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: var(--radius-sm); color: var(--text);
-    font-family: var(--sans); font-size: 14px; outline: none;
-    text-align: center; transition: border-color 0.2s;
-  }
-  .number-input:focus { border-color: var(--teal); }
-  .btn-save {
-    padding: 11px 28px; background: var(--teal); color: #0a1a18;
-    border: none; border-radius: var(--radius-sm);
-    font-family: var(--sans); font-size: 14px; font-weight: 600;
-    cursor: pointer; transition: opacity 0.2s;
-  }
-  .btn-save:hover { opacity: 0.9; }
-  .danger-zone { border-color: rgba(248,113,113,0.2) !important; }
-  .danger-zone h3 { color: var(--red) !important; }
-  .btn-danger {
-    padding: 10px 18px; background: rgba(248,113,113,0.1);
-    border: 1px solid rgba(248,113,113,0.3); border-radius: var(--radius-sm);
-    color: var(--red); font-family: var(--sans); font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .btn-danger:hover { background: rgba(248,113,113,0.2); }
+    .auth-tab {
+      padding: 10px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      border: none;
+      background: transparent;
+      font-weight: 500;
+      transition: var(--transition);
+      min-height: 44px;
+    }
 
-  /* ─── TOAST ─── */
-  .toast {
-    position: fixed; bottom: 28px; right: 28px;
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: 10px; padding: 12px 20px;
-    font-size: 14px; color: var(--text);
-    box-shadow: var(--shadow); z-index: 999;
-    transform: translateY(80px); opacity: 0;
-    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast .toast-icon { margin-right: 8px; }
+    .auth-tab.active {
+      background: var(--card-bg);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+      font-weight: 600;
+    }
 
-  /* ─── EMPTY STATE ─── */
-  .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
-  .empty-state .empty-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.5; }
-  .empty-state p { font-size: 14px; }
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: left;
+    }
 
-  /* ─── ANIMATIONS ─── */
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-  /* ─── MOBILE RESPONSIVE ─── */
-  @media (max-width: 640px) {
-    .sidebar { display: none; }
-    .main { padding: 20px 16px; }
-    .auth-box { padding: 32px 24px; }
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-  }
-</style>
+    .form-group label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      background: #111520;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      color: var(--text-white);
+      font-size: 0.95rem;
+      outline: none;
+      width: 100%;
+      min-height: 46px;
+      transition: var(--transition);
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--teal);
+      box-shadow: var(--focus-ring);
+    }
+
+    .auth-hint {
+      margin-top: 22px;
+      font-size: 0.78rem;
+      color: var(--text-subtle);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 8px 12px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    /* ========================================================
+       APPLICATION SHELL (UNIVERSAL ADAPTIVE VIEWPORTS)
+       ======================================================== */
+    #app-container {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    .topbar {
+      height: var(--topbar-height);
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(14px, 3vw, 32px);
+      padding-top: env(safe-area-inset-top);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-white);
+    }
+
+    .brand-icon-wrap {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, rgba(45, 212, 192, 0.25), rgba(15, 17, 23, 0.9));
+      border: 1px solid rgba(45, 212, 192, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 14px var(--teal-glow);
+    }
+
+    .brand-title {
+      font-size: clamp(0.98rem, 2vw, 1.18rem);
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px 10px 4px 5px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #14b8a6, #0f766e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.76rem;
+      color: #fff;
+    }
+
+    .user-name-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-white);
+      max-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-signout {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      cursor: pointer;
+      min-height: 40px;
+      transition: var(--transition);
+    }
+    .btn-signout:hover, .btn-signout:focus-visible {
+      border-color: var(--danger);
+      color: var(--danger);
+      background: var(--danger-dim);
+    }
+
+    .menu-toggle-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--text-white);
+      cursor: pointer;
+      padding: 8px;
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 8px;
+    }
+
+    /* Main Layout */
+    .layout-body {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    /* Fixed Left Sidebar (Desktop / Large Tablet) */
+    .sidebar-backdrop {
+      display: none;
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 14px;
+      flex-shrink: 0;
+    }
+
+    .nav-label {
+      text-transform: uppercase;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text-subtle);
+      margin: 12px 14px 8px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      min-height: 44px;
+    }
+
+    .nav-item:hover, .nav-item:focus-visible {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-white);
+    }
+
+    .nav-item.active {
+      background: var(--teal-dim);
+      color: var(--teal);
+      border-color: rgba(45, 212, 192, 0.25);
+      font-weight: 600;
+    }
+
+    .nav-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-badge {
+      background: var(--card-border);
+      color: var(--text-white);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .nav-item.active .nav-badge {
+      background: var(--teal);
+      color: #0b111e;
+    }
+
+    /* Content Area */
+    .main-viewport {
+      flex: 1;
+      padding: clamp(16px, 3.5vw, 36px);
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .screen-page {
+      display: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.24s ease, transform 0.24s ease;
+    }
+
+    .screen-page.active-page {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Standard Page Header */
+    .page-header {
+      margin-bottom: clamp(18px, 3vw, 28px);
+    }
+    .page-header h2 {
+      font-size: clamp(1.45rem, 3vw, 1.85rem);
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+    .page-header p {
+      color: var(--text-muted);
+      font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+    }
+
+    /* Common Buttons */
+    .btn-primary {
+      background: var(--teal);
+      color: #0c121e;
+      border: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      transition: var(--transition);
+      box-shadow: 0 4px 14px rgba(45, 212, 192, 0.25);
+    }
+    .btn-primary:hover, .btn-primary:focus-visible {
+      background: var(--teal-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      color: var(--text-white);
+      border: 1px solid var(--card-border);
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      transition: var(--transition);
+    }
+    .btn-secondary:hover, .btn-secondary:focus-visible {
+      background: var(--card-hover);
+      border-color: #384666;
+    }
+
+    .btn-danger {
+      background: var(--danger-dim);
+      color: var(--danger);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      padding: 9px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      transition: var(--transition);
+    }
+    .btn-danger:hover, .btn-danger:focus-visible {
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    /* ========================================================
+       SCREEN 2: DASHBOARD (Fluid Grid System)
+       ======================================================== */
+    .greeting-banner {
+      margin-bottom: clamp(18px, 3vw, 26px);
+    }
+    .greeting-text {
+      font-size: clamp(1.4rem, 3.2vw, 1.85rem);
+      font-weight: 600;
+      color: #fff;
+    }
+    .greeting-subtext {
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+    }
+
+    /* 4 Stat Cards: Desktop 4-col, Tablet 2-col, Mobile 2-col/1-col */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: clamp(12px, 2vw, 18px);
+      margin-bottom: clamp(18px, 2.5vw, 26px);
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: clamp(16px, 2vw, 22px);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .stat-card:hover {
+      border-color: #384666;
+      transform: translateY(-2px);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .stat-card.accent-teal::before { background: var(--teal); }
+    .stat-card.accent-purple::before { background: var(--purple); }
+    .stat-card.accent-amber::before { background: var(--amber); }
+    .stat-card.accent-coral::before { background: var(--coral); }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .stat-value {
+      font-size: clamp(1.7rem, 3.5vw, 2.2rem);
+      font-weight: 700;
+      margin: 8px 0 3px;
+      color: #ffffff;
+      font-family: 'Cinzel', serif;
+    }
+    .stat-meta {
+      font-size: 0.78rem;
+      color: var(--teal);
+    }
+
+    /* Security Status Card Panel */
+    .card-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: clamp(16px, 2.5vw, 24px);
+      margin-bottom: clamp(18px, 2.5vw, 26px);
+    }
+
+    .card-panel-title {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #141926;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .status-row-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-white);
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-green {
+      background: rgba(34, 197, 94, 0.14);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+    .badge-amber {
+      background: var(--amber-dim);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+    .badge-teal {
+      background: var(--teal-dim);
+      color: var(--teal);
+      border: 1px solid rgba(45, 212, 192, 0.3);
+    }
+    .badge-purple {
+      background: var(--purple-dim);
+      color: #c084fc;
+      border: 1px solid rgba(192, 132, 252, 0.3);
+    }
+    .badge-coral {
+      background: var(--coral-dim);
+      color: #fda4af;
+      border: 1px solid rgba(253, 164, 175, 0.3);
+    }
+
+    /* Quick Actions Row */
+    .quick-actions-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: clamp(10px, 1.8vw, 16px);
+    }
+
+    .quick-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      color: var(--text-white);
+      transition: var(--transition);
+      text-align: left;
+      min-height: 88px;
+    }
+    .quick-btn:hover, .quick-btn:focus-visible {
+      border-color: var(--teal);
+      transform: translateY(-2px);
+      background: var(--card-hover);
+    }
+    .quick-btn-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--teal);
+    }
+    .quick-btn-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+    .quick-btn-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* ========================================================
+       SCREEN 3: VAULT (Adaptive Grid)
+       ======================================================== */
+    .vault-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1 1 240px;
+      position: relative;
+    }
+    .search-box input {
+      padding-left: 40px;
+    }
+    .search-box-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-subtle);
+      pointer-events: none;
+    }
+
+    .filter-select {
+      flex: 0 1 200px;
+      min-width: 160px;
+    }
+
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr));
+      gap: clamp(14px, 2vw, 20px);
+    }
+
+    .vault-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition);
+    }
+    .vault-card:hover {
+      border-color: #384666;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+    }
+
+    .vault-card-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .cat-icon-container {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cat-password { background: var(--teal-dim); color: var(--teal); }
+    .cat-note { background: var(--amber-dim); color: var(--amber); }
+    .cat-document { background: var(--purple-dim); color: var(--purple); }
+    .cat-personalmessage { background: var(--coral-dim); color: var(--coral); }
+
+    .vault-card-titles {
+      flex: 1;
+      min-width: 0;
+    }
+    .vault-card-title {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .vault-card-content {
+      background: #121622;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      margin-bottom: 14px;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      font-family: monospace;
+      word-break: break-all;
+      min-height: 52px;
+    }
+
+    .vault-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.78rem;
+      color: var(--text-subtle);
+    }
+
+    .card-action-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-subtle);
+      cursor: pointer;
+      padding: 8px;
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    .card-action-btn:hover, .card-action-btn:focus-visible {
+      color: var(--danger);
+      background: var(--danger-dim);
+    }
+
+    /* ========================================================
+       SCREEN 4: TRUSTED CONTACTS
+       ======================================================== */
+    .contacts-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .contacts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr));
+      gap: clamp(14px, 2vw, 20px);
+    }
+
+    .contact-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: var(--transition);
+    }
+    .contact-card:hover {
+      border-color: #384666;
+      transform: translateY(-2px);
+    }
+
+    .contact-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .contact-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .contact-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .contact-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .contact-email {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .contact-status-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: #141825;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px dashed rgba(255, 255, 255, 0.08);
+    }
+
+    .contact-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--teal);
+    }
+
+    .contact-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 8px;
+    }
+
+    /* ========================================================
+       SCREEN 5: ACTIVITY LOG
+       ======================================================== */
+    .log-list {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .log-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      gap: 14px;
+    }
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+    .log-entry:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .log-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .log-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 6px;
+      box-shadow: 0 0 6px currentColor;
+    }
+    .dot-green { color: #4ade80; background: #4ade80; }
+    .dot-purple { color: #a855f7; background: #a855f7; }
+    .dot-amber { color: #f59e0b; background: #f59e0b; }
+    .dot-blue { color: #38bdf8; background: #38bdf8; }
+    .dot-red { color: #f43f5e; background: #f43f5e; }
+
+    .log-text-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .log-desc {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-white);
+      word-break: break-word;
+    }
+    .log-user {
+      font-size: 0.76rem;
+      color: var(--text-subtle);
+    }
+
+    .log-time {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    /* ========================================================
+       SCREEN 6: SETTINGS
+       ======================================================== */
+    .settings-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 800px;
+    }
+
+    .settings-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: clamp(16px, 2.5vw, 24px);
+    }
+
+    .settings-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      gap: 16px;
+    }
+    .setting-row:not(:last-child) {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .setting-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+    }
+    .setting-meta-title {
+      font-size: 0.94rem;
+      font-weight: 500;
+      color: #ffffff;
+    }
+    .setting-meta-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Accessible Custom Toggle */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #242c3d;
+      transition: .25s;
+      border-radius: 34px;
+      border: 1px solid var(--card-border);
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #94a3b8;
+      transition: .25s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--teal);
+      border-color: var(--teal);
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+      background-color: #0b111e;
+    }
+    input:focus-visible + .slider {
+      box-shadow: var(--focus-ring);
+    }
+
+    .danger-zone-card {
+      border-color: rgba(244, 63, 94, 0.35);
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.06) 0%, var(--card-bg) 100%);
+    }
+    .danger-zone-title {
+      color: var(--danger);
+    }
+
+    /* ========================================================
+       MODALS (Accessible & Mobile Responsive)
+       ======================================================== */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(10, 12, 18, 0.82);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: clamp(12px, 3vw, 24px);
+    }
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-window {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
+      animation: modalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-head h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.5rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-close-modal:hover, .btn-close-modal:focus-visible { color: #fff; }
+
+    .modal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    .modal-actions {
+      padding: 14px 20px;
+      border-top: 1px solid var(--card-border);
+      background: #141824;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* ========================================================
+       TOAST ALERTS
+       ======================================================== */
+    #toast-container {
+      position: fixed;
+      bottom: max(20px, env(safe-area-inset-bottom));
+      right: 20px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+      max-width: calc(100vw - 40px);
+    }
+
+    .toast {
+      pointer-events: auto;
+      background: #1b2336;
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--teal);
+      color: var(--text-white);
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      max-width: 380px;
+    }
+    .toast.toast-danger { border-left-color: var(--danger); }
+    .toast.toast-amber { border-left-color: var(--amber); }
+
+    @keyframes toastIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes toastOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+
+    /* Empty state card */
+    .empty-state {
+      padding: 44px 20px;
+      text-align: center;
+      background: var(--card-bg);
+      border: 1px dashed var(--card-border);
+      border-radius: var(--radius);
+      grid-column: 1 / -1;
+      color: var(--text-muted);
+    }
+    .empty-state p {
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    /* ========================================================
+       BOTTOM APP BAR FOR MOBILE THUMB REACH (<768px)
+       ======================================================== */
+    .mobile-bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(var(--bottombar-height) + env(safe-area-inset-bottom));
+      padding-bottom: env(safe-area-inset-bottom);
+      background: #121520;
+      border-top: 1px solid var(--card-border);
+      z-index: 95;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .mobile-bottom-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 6px 0;
+      cursor: pointer;
+      min-height: 48px;
+      position: relative;
+    }
+    .mobile-bottom-btn.active {
+      color: var(--teal);
+    }
+    .mobile-bottom-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .mobile-bottom-badge {
+      position: absolute;
+      top: 4px;
+      right: calc(50% - 18px);
+      background: var(--teal);
+      color: #0b111e;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 999px;
+      line-height: 1;
+    }
+
+    /* ========================================================
+       RESPONSIVE BREAKPOINTS (Mobile, Tablet, Desktop)
+       ======================================================== */
+
+    /* Tablet & Medium devices (<= 1024px) */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 230px;
+      }
+      .main-viewport {
+        padding: 24px 20px;
+      }
+    }
+
+    /* Small Tablet & Mobile Devices (<= 860px) */
+    @media (max-width: 860px) {
+      .menu-toggle-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Sidebar becomes off-canvas drawer */
+      .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(8, 10, 16, 0.7);
+        backdrop-filter: blur(4px);
+        z-index: 105;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+      .sidebar-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: -290px;
+        width: 280px;
+        z-index: 110;
+        box-shadow: 10px 0 35px rgba(0, 0, 0, 0.7);
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        padding-top: max(20px, env(safe-area-inset-top));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+      }
+      .sidebar.open {
+        transform: translateX(290px);
+      }
+
+      .mobile-bottom-nav {
+        display: flex;
+      }
+
+      .main-viewport {
+        padding-bottom: calc(var(--bottombar-height) + env(safe-area-inset-bottom) + 30px);
+      }
+
+      #toast-container {
+        bottom: calc(var(--bottombar-height) + env(safe-area-inset-bottom) + 12px);
+        right: 14px;
+        left: 14px;
+      }
+      .toast {
+        max-width: 100%;
+      }
+    }
+
+    /* Mobile Phones (<= 640px) */
+    @media (max-width: 640px) {
+      .user-name-text {
+        display: none;
+      }
+      .vault-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .filter-select {
+        flex: 1 1 auto;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .stat-card {
+        padding: 14px 12px;
+      }
+      .stat-value {
+        font-size: 1.6rem;
+      }
+      .quick-actions-row {
+        grid-template-columns: 1fr 1fr;
+      }
+      .quick-btn {
+        padding: 14px 12px;
+      }
+      .setting-row {
+        flex-direction: row;
+        align-items: center;
+      }
+      .modal-actions button {
+        flex: 1;
+      }
+    }
+
+    /* Smallest Mobile Viewports (<= 380px) */
+    @media (max-width: 380px) {
+      .stats-grid, .quick-actions-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ═══════════════ AUTH SCREEN ═══════════════ -->
-<div id="auth-screen">
-  <div class="auth-box">
-    <div class="auth-logo">
-      <div class="logo-icon">🕊️</div>
-      <h1>Afterlife Manager</h1>
-      <p>Secure your legacy, protect your loved ones</p>
-    </div>
-    <div class="tab-row">
-      <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
-      <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
-    </div>
-    <div id="login-form">
-      <div class="form-group">
-        <label class="form-label">Email address</label>
-        <input class="form-input" type="email" id="login-email" placeholder="you@example.com" value="demo@example.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" type="password" id="login-pass" placeholder="••••••••" value="demo1234">
-      </div>
-      <button class="btn-primary" onclick="doLogin()">Sign In →</button>
-    </div>
-    <div id="signup-form" style="display:none">
-      <div class="form-group">
-        <label class="form-label">Full name</label>
-        <input class="form-input" type="text" id="signup-name" placeholder="Arjun Sharma">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Email address</label>
-        <input class="form-input" type="email" id="signup-email" placeholder="you@example.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" type="password" id="signup-pass" placeholder="Min. 8 characters">
-      </div>
-      <button class="btn-primary" onclick="doSignup()">Create Account →</button>
-    </div>
-    <p class="auth-hint">Any email & password works for this prototype</p>
-  </div>
-</div>
+  <!-- Accessible Skip Link -->
+  <a href="#main-content-region" class="skip-to-content">Skip to content</a>
 
-<!-- ═══════════════ APP SHELL ═══════════════ -->
-<div id="app">
-  <div class="topbar">
-    <div class="topbar-logo">Afterlife <span>Manager</span></div>
-    <div class="topbar-user">
-      <div class="avatar" id="user-avatar">AS</div>
-      <span class="topbar-name" id="user-name-top">Arjun Sharma</span>
-      <button class="btn-logout" onclick="logout()">Sign out</button>
+  <!-- =======================================================
+       SCREEN 1: LOGIN / SIGNUP
+       ======================================================= -->
+  <main id="auth-screen" role="main" aria-label="Authentication">
+    <div class="auth-card">
+      <div class="auth-brand-icon" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="m9 12 2 2 4-4"></path>
+        </svg>
+      </div>
+      <h1 class="auth-title">Digital Afterlife</h1>
+      <p class="auth-tagline">Secure your legacy</p>
+
+      <!-- Tabs -->
+      <div class="auth-tabs" role="tablist" aria-label="Sign In or Create Account">
+        <button type="button" role="tab" aria-selected="true" aria-controls="form-signin" class="auth-tab active" id="tab-signin" onclick="switchAuthTab('signin')">
+          Sign In
+        </button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="form-signup" class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">
+          Create Account
+        </button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="form-signin" role="tabpanel" aria-labelledby="tab-signin" class="auth-form" onsubmit="handleAuthSubmit(event, 'signin')">
+        <div class="form-group">
+          <label for="signin-email">Email Address</label>
+          <input type="email" id="signin-email" class="form-input" placeholder="alex.morgan@example.com" value="alex.morgan@example.com" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="signin-password">Password</label>
+          <input type="password" id="signin-password" class="form-input" placeholder="••••••••••••" value="password123" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top: 6px;">
+          Sign In
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="form-signup" role="tabpanel" aria-labelledby="tab-signup" class="auth-form" style="display: none;" onsubmit="handleAuthSubmit(event, 'signup')">
+        <div class="form-group">
+          <label for="signup-name">Full Name</label>
+          <input type="text" id="signup-name" class="form-input" placeholder="Alex Morgan" value="Alex Morgan" required autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="signup-email">Email Address</label>
+          <input type="email" id="signup-email" class="form-input" placeholder="alex.morgan@example.com" value="alex.morgan@example.com" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="signup-password">Master Password</label>
+          <input type="password" id="signup-password" class="form-input" placeholder="••••••••••••" value="legacyPass2025" required autocomplete="new-password" />
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top: 6px;">
+          Create Account
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+
+      <div class="auth-hint">
+        ⚡ Any credentials work for this prototype
+      </div>
     </div>
-  </div>
-  <div class="app-body">
-    <nav class="sidebar">
-      <span class="sidebar-label">Overview</span>
-      <button class="nav-item active" onclick="navigate('dashboard')">
-        <span class="nav-icon">🏠</span> Dashboard
+  </main>
+
+  <!-- =======================================================
+       AUTHENTICATED APPLICATION SHELL
+       ======================================================= -->
+  <div id="app-container" aria-hidden="true">
+    
+    <!-- Topbar -->
+    <header class="topbar">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button class="menu-toggle-btn" onclick="toggleSidebarDrawer()" aria-label="Open Navigation Drawer" id="mobile-menu-trigger">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="brand-section">
+          <div class="brand-icon-wrap" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+          </div>
+          <span class="brand-title brand-font">Digital Afterlife</span>
+        </div>
+      </div>
+
+      <div class="user-actions">
+        <div class="user-profile-badge" aria-label="Current User Profile">
+          <div class="avatar" id="nav-user-avatar" aria-hidden="true">AM</div>
+          <span class="user-name-text" id="nav-user-name">Alex Morgan</span>
+        </div>
+        <button class="btn-signout" onclick="signOut()" aria-label="Sign out of your session">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="layout-body">
+      <!-- Off-canvas Backdrop for Mobile / Tablet -->
+      <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebarDrawer(false)" aria-hidden="true"></div>
+
+      <!-- Adaptive Left Sidebar -->
+      <aside class="sidebar" id="app-sidebar" aria-label="Main Navigation">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <span class="nav-label">Navigation</span>
+          <button class="btn-close-modal" onclick="toggleSidebarDrawer(false)" aria-label="Close navigation" style="display: none;" id="sidebar-close-btn">&times;</button>
+        </div>
+        <nav>
+          <ul class="nav-list">
+            <li>
+              <a class="nav-item active" data-screen="dashboard" onclick="navigateTo('dashboard')" role="button" tabindex="0">
+                <div class="nav-item-left">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                  <span>Dashboard</span>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a class="nav-item" data-screen="vault" onclick="navigateTo('vault')" role="button" tabindex="0">
+                <div class="nav-item-left">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M12 15v3"/></svg>
+                  <span>Vault</span>
+                </div>
+                <span class="nav-badge" id="badge-vault-count" aria-label="4 items in vault">4</span>
+              </a>
+            </li>
+            <li>
+              <a class="nav-item" data-screen="contacts" onclick="navigateTo('contacts')" role="button" tabindex="0">
+                <div class="nav-item-left">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span>Trusted Contacts</span>
+                </div>
+                <span class="nav-badge" id="badge-contacts-count" aria-label="2 trusted contacts">2</span>
+              </a>
+            </li>
+            <li>
+              <a class="nav-item" data-screen="activity" onclick="navigateTo('activity')" role="button" tabindex="0">
+                <div class="nav-item-left">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  <span>Activity Log</span>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a class="nav-item" data-screen="settings" onclick="navigateTo('settings')" role="button" tabindex="0">
+                <div class="nav-item-left">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <span>Settings</span>
+                </div>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Viewport Content -->
+      <main class="main-viewport" id="main-content-region" role="main">
+
+        <!-- ===================================================
+             SCREEN 2: DASHBOARD
+             =================================================== -->
+        <section id="screen-dashboard" class="screen-page active-page" aria-labelledby="dashboard-greeting">
+          <div class="greeting-banner">
+            <h2 class="greeting-text" id="dashboard-greeting">Good evening, Alex</h2>
+            <p class="greeting-subtext">Your digital vault & succession directives are actively monitored.</p>
+          </div>
+
+          <!-- 4 Stat Cards Grid -->
+          <div class="stats-grid">
+            <div class="stat-card accent-teal" tabindex="0">
+              <div class="stat-label">Vault Items</div>
+              <div class="stat-value" id="dash-vault-count">4</div>
+              <div class="stat-meta">Encrypted & synchronized</div>
+            </div>
+            <div class="stat-card accent-purple" tabindex="0">
+              <div class="stat-label">Trusted Contacts</div>
+              <div class="stat-value" id="dash-contacts-count">2</div>
+              <div class="stat-meta">Designated recipients</div>
+            </div>
+            <div class="stat-card accent-amber" tabindex="0">
+              <div class="stat-label">Inactivity Window</div>
+              <div class="stat-value" id="dash-inactivity-days">30d</div>
+              <div class="stat-meta">Trigger threshold</div>
+            </div>
+            <div class="stat-card accent-coral" tabindex="0">
+              <div class="stat-label">Account Status</div>
+              <div class="stat-value" style="font-size: 1.6rem; color: #4ade80; padding-top: 5px;">Active</div>
+              <div class="stat-meta">Status: Nominal</div>
+            </div>
+          </div>
+
+          <!-- Security Status Card Panel -->
+          <div class="card-panel">
+            <div class="card-panel-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>Security & Succession Status</span>
+            </div>
+            <div class="status-rows">
+              <div class="status-row">
+                <div class="status-row-info">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <span>Vault Encryption</span>
+                </div>
+                <span class="badge badge-green">AES-256 Enabled</span>
+              </div>
+              <div class="status-row">
+                <div class="status-row-info">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span>Last Activity</span>
+                </div>
+                <span class="badge badge-teal">Today</span>
+              </div>
+              <div class="status-row">
+                <div class="status-row-info">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <span>Inactivity Alert In</span>
+                </div>
+                <span class="badge badge-amber" id="dash-inactivity-badge">30 days</span>
+              </div>
+              <div class="status-row">
+                <div class="status-row-info">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
+                  <span>Contacts Notified</span>
+                </div>
+                <span class="badge badge-teal">Only on trigger</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions Row -->
+          <div class="quick-actions-row">
+            <button class="quick-btn" onclick="openAddVaultModal()">
+              <div class="quick-btn-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <div>
+                <div class="quick-btn-title">Add Vault Item</div>
+                <div class="quick-btn-desc">Store passwords, notes, files</div>
+              </div>
+            </button>
+
+            <button class="quick-btn" onclick="openAddContactModal()">
+              <div class="quick-btn-icon" style="color: var(--purple);" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              </div>
+              <div>
+                <div class="quick-btn-title">Add Trusted Contact</div>
+                <div class="quick-btn-desc">Assign legacy recipient</div>
+              </div>
+            </button>
+
+            <button class="quick-btn" onclick="navigateTo('settings')">
+              <div class="quick-btn-icon" style="color: var(--amber);" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </div>
+              <div>
+                <div class="quick-btn-title">Adjust Settings</div>
+                <div class="quick-btn-desc">Change trigger timer</div>
+              </div>
+            </button>
+
+            <button class="quick-btn" onclick="navigateTo('activity')">
+              <div class="quick-btn-icon" style="color: var(--blue);" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div>
+                <div class="quick-btn-title">View Activity Log</div>
+                <div class="quick-btn-desc">Audit actions and events</div>
+              </div>
+            </button>
+          </div>
+        </section>
+
+        <!-- ===================================================
+             SCREEN 3: VAULT
+             =================================================== -->
+        <section id="screen-vault" class="screen-page" aria-labelledby="vault-heading">
+          <div class="page-header">
+            <h2 id="vault-heading">Vault</h2>
+            <p>Encrypted sensitive data</p>
+          </div>
+
+          <div class="vault-toolbar">
+            <div class="search-box">
+              <svg class="search-box-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="search" id="vault-search-input" class="form-input" placeholder="Search by title..." oninput="handleVaultSearch()" aria-label="Search vault items by title" />
+            </div>
+
+            <select id="vault-category-filter" class="form-select filter-select" onchange="handleVaultFilter()" aria-label="Filter vault by category">
+              <option value="All">All Categories</option>
+              <option value="Password">Password</option>
+              <option value="Note">Note</option>
+              <option value="Document">Document</option>
+              <option value="Personal Message">Personal Message</option>
+            </select>
+
+            <button class="btn-primary" onclick="openAddVaultModal()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Item
+            </button>
+          </div>
+
+          <div class="items-grid" id="vault-items-container" role="region" aria-live="polite">
+            <!-- Rendered dynamically -->
+          </div>
+        </section>
+
+        <!-- ===================================================
+             SCREEN 4: TRUSTED CONTACTS
+             =================================================== -->
+        <section id="screen-contacts" class="screen-page" aria-labelledby="contacts-heading">
+          <div class="contacts-topbar">
+            <div class="page-header" style="margin-bottom: 0;">
+              <h2 id="contacts-heading">Trusted Contacts</h2>
+              <p>Notified and granted access on trigger</p>
+            </div>
+            <button class="btn-primary" onclick="openAddContactModal()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              Add Contact
+            </button>
+          </div>
+
+          <div class="contacts-grid" id="contacts-container" role="region" aria-live="polite" style="margin-top: 24px;">
+            <!-- Rendered dynamically -->
+          </div>
+        </section>
+
+        <!-- ===================================================
+             SCREEN 5: ACTIVITY LOG
+             =================================================== -->
+        <section id="screen-activity" class="screen-page" aria-labelledby="activity-heading">
+          <div class="page-header">
+            <h2 id="activity-heading">Activity Log</h2>
+            <p>Full transparent record of all actions</p>
+          </div>
+
+          <div class="log-list" id="activity-log-container" role="log" aria-live="polite">
+            <!-- Rendered dynamically -->
+          </div>
+        </section>
+
+        <!-- ===================================================
+             SCREEN 6: SETTINGS
+             =================================================== -->
+        <section id="screen-settings" class="screen-page" aria-labelledby="settings-heading">
+          <div class="page-header">
+            <h2 id="settings-heading">Settings</h2>
+            <p>Configure emergency triggers, notifications and security parameters</p>
+          </div>
+
+          <div class="settings-grid">
+            <!-- Inactivity Trigger Card -->
+            <div class="settings-card">
+              <div class="settings-card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Inactivity Trigger</span>
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <label for="setting-inactivity-days" class="setting-meta-title">Inactivity Period (Days)</label>
+                  <span class="setting-meta-desc">Number of consecutive inactive days before automated succession release</span>
+                </div>
+                <input type="number" id="setting-inactivity-days" class="form-input" style="width: 90px; text-align: center;" min="1" max="365" value="30" />
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <span class="setting-meta-title">Send Reminder Before Trigger</span>
+                  <span class="setting-meta-desc">Dispatch multiple safety confirmation alerts prior to release</span>
+                </div>
+                <label class="toggle-switch" aria-label="Toggle Reminder Before Trigger">
+                  <input type="checkbox" id="setting-reminder-toggle" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Notifications Card -->
+            <div class="settings-card">
+              <div class="settings-card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span>Notifications</span>
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <span class="setting-meta-title">Push Notifications</span>
+                  <span class="setting-meta-desc">Direct device alerts regarding vault check-ins and nominees</span>
+                </div>
+                <label class="toggle-switch" aria-label="Toggle Push Notifications">
+                  <input type="checkbox" id="setting-push-toggle" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <span class="setting-meta-title">Email Notifications</span>
+                  <span class="setting-meta-desc">Periodic succession digests sent to registered address</span>
+                </div>
+                <label class="toggle-switch" aria-label="Toggle Email Notifications">
+                  <input type="checkbox" id="setting-email-toggle" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Security Card -->
+            <div class="settings-card">
+              <div class="settings-card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>Security</span>
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <span class="setting-meta-title">Two-Factor Authentication</span>
+                  <span class="setting-meta-desc">Require hardware key or biometric token at sign in</span>
+                </div>
+                <label class="toggle-switch" aria-label="Toggle Two-Factor Authentication">
+                  <input type="checkbox" id="setting-2fa-toggle" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <span class="setting-meta-title">Login Activity Alerts</span>
+                  <span class="setting-meta-desc">Instant notification whenever an account session starts</span>
+                </div>
+                <label class="toggle-switch" aria-label="Toggle Login Alerts">
+                  <input type="checkbox" id="setting-login-alert-toggle" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <button class="btn-primary" style="align-self: flex-start;" onclick="saveSettings()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Settings
+            </button>
+
+            <!-- Danger Zone Card -->
+            <div class="settings-card danger-zone-card">
+              <div class="settings-card-title danger-zone-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span>Danger Zone</span>
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <span class="setting-meta-title" style="color: #fda4af;">Manual Emergency Trigger</span>
+                  <span class="setting-meta-desc">Simulates demise or incapacitation. Immediately dispatches vault access to all contacts.</span>
+                </div>
+                <button class="btn-danger" onclick="confirmEmergencyTrigger()">
+                  Trigger Now
+                </button>
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <span class="setting-meta-title" style="color: #fda4af;">Delete Account</span>
+                  <span class="setting-meta-desc">Permanently purge all encryption keys, nominees, and stored passwords.</span>
+                </div>
+                <button class="btn-danger" onclick="confirmDeleteAccount()">
+                  Delete Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- Mobile Quick Navigation Bar (<860px) -->
+    <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+      <button class="mobile-bottom-btn active" data-screen="dashboard" onclick="navigateTo('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span>Dashboard</span>
       </button>
-      <span class="sidebar-label">My Data</span>
-      <button class="nav-item" onclick="navigate('vault')">
-        <span class="nav-icon">🔐</span> Vault
-        <span class="badge" id="vault-badge">4</span>
+      <button class="mobile-bottom-btn" data-screen="vault" onclick="navigateTo('vault')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M12 15v3"/></svg>
+        <span>Vault</span>
+        <span class="mobile-bottom-badge" id="bottom-vault-count">4</span>
       </button>
-      <button class="nav-item" onclick="navigate('contacts')">
-        <span class="nav-icon">👥</span> Trusted Contacts
-        <span class="badge" id="contacts-badge">2</span>
+      <button class="mobile-bottom-btn" data-screen="contacts" onclick="navigateTo('contacts')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <span>Contacts</span>
+        <span class="mobile-bottom-badge" id="bottom-contacts-count">2</span>
       </button>
-      <span class="sidebar-label">Security</span>
-      <button class="nav-item" onclick="navigate('activity')">
-        <span class="nav-icon">📋</span> Activity Log
+      <button class="mobile-bottom-btn" data-screen="activity" onclick="navigateTo('activity')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span>Activity</span>
       </button>
-      <button class="nav-item" onclick="navigate('settings')">
-        <span class="nav-icon">⚙️</span> Settings
+      <button class="mobile-bottom-btn" data-screen="settings" onclick="navigateTo('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Settings</span>
       </button>
     </nav>
 
-    <main class="main">
-      <!-- ── DASHBOARD ── -->
-      <div class="page active" id="page-dashboard">
-        <div class="page-header">
-          <h2 id="dashboard-greeting">Good morning, Arjun 👋</h2>
-          <p>Your digital legacy is secure and up to date.</p>
-        </div>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon">🔐</div>
-            <div class="stat-val" id="stat-vault">4</div>
-            <div class="stat-label">Vault items</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">👥</div>
-            <div class="stat-val" id="stat-contacts">2</div>
-            <div class="stat-label">Trusted contacts</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🛡️</div>
-            <div class="stat-val">30</div>
-            <div class="stat-label">Day inactivity window</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">✅</div>
-            <div class="stat-val" style="font-size:22px;">Active</div>
-            <div class="stat-label">Account status</div>
-          </div>
-        </div>
-        <div class="status-card">
-          <h3>Security status</h3>
-          <div class="status-row">
-            <span class="status-label">Vault encryption</span>
-            <span class="pill pill-green">AES-256 Enabled</span>
-          </div>
-          <div class="status-row">
-            <span class="status-label">Last activity ping</span>
-            <span class="status-val">Today, just now</span>
-          </div>
-          <div class="status-row">
-            <span class="status-label">Inactivity alert in</span>
-            <span class="pill pill-amber">30 days</span>
-          </div>
-          <div class="status-row">
-            <span class="status-label">Nominated contacts notified</span>
-            <span class="pill pill-teal">Only on trigger</span>
-          </div>
-        </div>
-        <h3 style="font-size:14px;color:var(--text2);margin-bottom:12px;font-weight:600;">Quick actions</h3>
-        <div class="quick-actions">
-          <button class="btn-action" onclick="navigate('vault');openVaultModal()">+ Add vault item</button>
-          <button class="btn-action" onclick="navigate('contacts');openContactModal()">+ Add trusted contact</button>
-          <button class="btn-action" onclick="navigate('settings')">⚙ Adjust inactivity period</button>
-          <button class="btn-action" onclick="navigate('activity')">📋 View activity log</button>
-        </div>
-      </div>
-
-      <!-- ── VAULT ── -->
-      <div class="page" id="page-vault">
-        <div class="page-header">
-          <h2>🔐 Vault</h2>
-          <p>All your sensitive data, encrypted and secure.</p>
-        </div>
-        <div class="toolbar">
-          <input class="search-input" placeholder="🔍  Search vault items..." oninput="filterVault(this.value)">
-          <select class="filter-select" onchange="filterVaultCat(this.value)">
-            <option value="all">All categories</option>
-            <option value="password">Password</option>
-            <option value="note">Note</option>
-            <option value="document">Document</option>
-            <option value="message">Personal Message</option>
-          </select>
-          <button class="btn-add" onclick="openVaultModal()">+ Add Item</button>
-        </div>
-        <div class="vault-grid" id="vault-grid"></div>
-      </div>
-
-      <!-- ── CONTACTS ── -->
-      <div class="page" id="page-contacts">
-        <div class="page-header">
-          <h2>👥 Trusted Contacts</h2>
-          <p>These people will be notified and granted access when triggered.</p>
-        </div>
-        <div style="margin-bottom:20px">
-          <button class="btn-add" onclick="openContactModal()">+ Add Contact</button>
-        </div>
-        <div class="contacts-grid" id="contacts-grid"></div>
-      </div>
-
-      <!-- ── ACTIVITY LOG ── -->
-      <div class="page" id="page-activity">
-        <div class="page-header">
-          <h2>📋 Activity Log</h2>
-          <p>A transparent record of all actions on your account.</p>
-        </div>
-        <div class="log-list" id="log-list"></div>
-      </div>
-
-      <!-- ── SETTINGS ── -->
-      <div class="page" id="page-settings">
-        <div class="page-header">
-          <h2>⚙️ Settings</h2>
-          <p>Control how and when your data is shared.</p>
-        </div>
-        <div class="settings-card">
-          <h3>🕐 Inactivity trigger</h3>
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Inactivity period (days)</h4>
-              <p>Notify contacts after this many days without activity</p>
-            </div>
-            <input class="number-input" type="number" id="inactivity-days" value="30" min="1" max="365">
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Send reminder before trigger</h4>
-              <p>Get an email warning 7 days before contacts are notified</p>
-            </div>
-            <button class="toggle on" id="toggle-reminder" onclick="toggleSetting(this)"></button>
-          </div>
-        </div>
-        <div class="settings-card">
-          <h3>🔔 Notifications</h3>
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Push notifications</h4>
-              <p>Receive alerts about account activity</p>
-            </div>
-            <button class="toggle on" onclick="toggleSetting(this)"></button>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Email notifications</h4>
-              <p>Monthly digest and security alerts</p>
-            </div>
-            <button class="toggle on" onclick="toggleSetting(this)"></button>
-          </div>
-        </div>
-        <div class="settings-card">
-          <h3>🔒 Security</h3>
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Two-factor authentication</h4>
-              <p>Add an extra layer of login security</p>
-            </div>
-            <button class="toggle" onclick="toggleSetting(this)"></button>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Login activity alerts</h4>
-              <p>Get notified of new sign-ins</p>
-            </div>
-            <button class="toggle on" onclick="toggleSetting(this)"></button>
-          </div>
-        </div>
-        <div style="margin-bottom:20px">
-          <button class="btn-save" onclick="saveSettings()">Save settings</button>
-        </div>
-        <div class="settings-card danger-zone">
-          <h3>⚠ Danger zone</h3>
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Manual trigger unlock</h4>
-              <p>Immediately notify all trusted contacts right now</p>
-            </div>
-            <button class="btn-danger" onclick="manualTrigger()">Trigger Now</button>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Delete account</h4>
-              <p>Permanently remove all your data</p>
-            </div>
-            <button class="btn-danger">Delete Account</button>
-          </div>
-        </div>
-      </div>
-    </main>
   </div>
-</div>
 
-<!-- ═══════════════ VAULT MODAL ═══════════════ -->
-<div class="modal-overlay" id="vault-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Add Vault Item</h3>
-      <button class="btn-close" onclick="closeVaultModal()">✕</button>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Title</label>
-      <input class="form-input" type="text" id="vault-title" placeholder="e.g. Gmail Password">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Category</label>
-      <select class="form-select" id="vault-cat">
-        <option value="password">🔑 Password</option>
-        <option value="note">📝 Note</option>
-        <option value="document">📄 Document</option>
-        <option value="message">💌 Personal Message</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Content</label>
-      <textarea class="form-textarea" id="vault-content" placeholder="Enter the sensitive content here. It will be encrypted."></textarea>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeVaultModal()">Cancel</button>
-      <button class="btn-submit" onclick="addVaultItem()">Save to Vault 🔐</button>
+  <!-- =======================================================
+       ACCESSIBLE MODALS
+       ======================================================= -->
+
+  <!-- Modal: Add Vault Item -->
+  <div class="modal-backdrop" id="modal-vault" role="dialog" aria-modal="true" aria-labelledby="modal-vault-title">
+    <div class="modal-window">
+      <div class="modal-head">
+        <h3 id="modal-vault-title">Add Vault Item</h3>
+        <button class="btn-close-modal" onclick="closeModal('modal-vault')" aria-label="Close modal">&times;</button>
+      </div>
+      <form onsubmit="handleSaveVaultItem(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="vault-new-title">Item Title</label>
+            <input type="text" id="vault-new-title" class="form-input" placeholder="e.g. Master Swiss Bank Account" required />
+          </div>
+          <div class="form-group">
+            <label for="vault-new-category">Category</label>
+            <select id="vault-new-category" class="form-select" required>
+              <option value="Password">Password</option>
+              <option value="Note">Note</option>
+              <option value="Document">Document</option>
+              <option value="Personal Message">Personal Message</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="vault-new-content">Encrypted Content</label>
+            <textarea id="vault-new-content" class="form-textarea" rows="4" placeholder="Enter sensitive keys, passwords, combinations, or notes..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeModal('modal-vault')">Cancel</button>
+          <button type="submit" class="btn-primary">Save to Vault</button>
+        </div>
+      </form>
     </div>
   </div>
-</div>
 
-<!-- ═══════════════ CONTACT MODAL ═══════════════ -->
-<div class="modal-overlay" id="contact-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Add Trusted Contact</h3>
-      <button class="btn-close" onclick="closeContactModal()">✕</button>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Full name</label>
-      <input class="form-input" type="text" id="contact-name" placeholder="e.g. Priya Sharma">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Email address</label>
-      <input class="form-input" type="email" id="contact-email" placeholder="priya@example.com">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Relationship</label>
-      <select class="form-select" id="contact-rel">
-        <option value="Spouse">Spouse</option>
-        <option value="Parent">Parent</option>
-        <option value="Sibling">Sibling</option>
-        <option value="Child">Child</option>
-        <option value="Friend">Close Friend</option>
-        <option value="Lawyer">Lawyer</option>
-        <option value="Other">Other</option>
-      </select>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeContactModal()">Cancel</button>
-      <button class="btn-submit" onclick="addContact()">Add Contact 👥</button>
+  <!-- Modal: Add Trusted Contact -->
+  <div class="modal-backdrop" id="modal-contact" role="dialog" aria-modal="true" aria-labelledby="modal-contact-title">
+    <div class="modal-window">
+      <div class="modal-head">
+        <h3 id="modal-contact-title">Add Trusted Contact</h3>
+        <button class="btn-close-modal" onclick="closeModal('modal-contact')" aria-label="Close modal">&times;</button>
+      </div>
+      <form onsubmit="handleSaveContact(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="contact-new-name">Full Name</label>
+            <input type="text" id="contact-new-name" class="form-input" placeholder="e.g. Priya Sharma" required autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label for="contact-new-email">Email Address</label>
+            <input type="email" id="contact-new-email" class="form-input" placeholder="priya.sharma@example.com" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="contact-new-rel">Relationship</label>
+            <select id="contact-new-rel" class="form-select" required>
+              <option value="Spouse">Spouse</option>
+              <option value="Parent">Parent</option>
+              <option value="Sibling">Sibling</option>
+              <option value="Child">Child</option>
+              <option value="Friend">Friend</option>
+              <option value="Lawyer">Lawyer</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeModal('modal-contact')">Cancel</button>
+          <button type="submit" class="btn-primary">Add Contact</button>
+        </div>
+      </form>
     </div>
   </div>
-</div>
 
-<!-- ═══════════════ TOAST ═══════════════ -->
-<div class="toast" id="toast"><span class="toast-icon"></span><span id="toast-msg"></span></div>
-
-<script>
-// ─── STATE ───
-let state = {
-  user: null,
-  vaultItems: [
-    { id:1, title:'Gmail Account', cat:'password', content:'Password: Secure#2024!', date:'2 Jan 2025' },
-    { id:2, title:'Letter to Family', cat:'message', content:'My dear ones, I love you all...', date:'5 Jan 2025' },
-    { id:3, title:'Insurance Policy', cat:'document', content:'Policy No: LIC-2034-XYZ. Nominee: Priya Sharma', date:'10 Jan 2025' },
-    { id:4, title:'Bank Account Details', cat:'note', content:'Account: 9876543210, IFSC: SBIN0001234', date:'15 Jan 2025' },
-  ],
-  contacts: [
-    { id:1, name:'Priya Sharma', email:'priya@example.com', rel:'Spouse', color:'#2dd4c0' },
-    { id:2, name:'Rahul Sharma', email:'rahul@example.com', rel:'Sibling', color:'#a78bfa' },
-  ],
-  logs: [
-    { action:'Signed in to account', type:'auth', time:'Today, 9:41 AM', user:'You' },
-    { action:'Added vault item: Insurance Policy', type:'vault', time:'10 Jan, 2:30 PM', user:'You' },
-    { action:'Added trusted contact: Rahul Sharma', type:'contact', time:'8 Jan, 11:00 AM', user:'You' },
-    { action:'Changed inactivity period to 30 days', type:'settings', time:'6 Jan, 4:15 PM', user:'You' },
-    { action:'Added vault item: Letter to Family', type:'vault', time:'5 Jan, 6:00 PM', user:'You' },
-    { action:'Account created', type:'auth', time:'1 Jan, 10:00 AM', user:'You' },
-  ],
-  settings: { inactivityDays: 30 },
-  nextId: 5,
-  filterText: '',
-  filterCat: 'all'
-};
-
-// ─── AUTH ───
-function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='signup')));
-  document.getElementById('login-form').style.display = tab==='login' ? '' : 'none';
-  document.getElementById('signup-form').style.display = tab==='signup' ? '' : 'none';
-}
-
-function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass = document.getElementById('login-pass').value.trim();
-  if (!email || !pass) { showToast('⚠️','Please fill in all fields'); return; }
-  const name = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-  loginUser(name, email);
-}
-
-function doSignup() {
-  const name = document.getElementById('signup-name').value.trim();
-  const email = document.getElementById('signup-email').value.trim();
-  const pass = document.getElementById('signup-pass').value.trim();
-  if (!name || !email || !pass) { showToast('⚠️','Please fill in all fields'); return; }
-  loginUser(name, email);
-}
-
-function loginUser(name, email) {
-  state.user = { name, email };
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  const initials = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-  document.getElementById('user-avatar').textContent = initials;
-  document.getElementById('user-name-top').textContent = name;
-  const hour = new Date().getHours();
-  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('dashboard-greeting').textContent = `${greet}, ${name.split(' ')[0]} 👋`;
-  addLog(`Signed in to account`, 'auth');
-  renderAll();
-  showToast('✅', `Welcome back, ${name.split(' ')[0]}!`);
-}
-
-function logout() {
-  document.getElementById('auth-screen').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-}
-
-// ─── NAVIGATION ───
-function navigate(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  const navItems = document.querySelectorAll('.nav-item');
-  const map = ['dashboard','vault','contacts','activity','settings'];
-  const idx = map.indexOf(page);
-  // find matching button by its text
-  navItems.forEach(n => { if (n.textContent.toLowerCase().includes(page)) n.classList.add('active'); });
-}
-
-// ─── VAULT ───
-function renderVault() {
-  const grid = document.getElementById('vault-grid');
-  let items = state.vaultItems.filter(i => {
-    const matchText = i.title.toLowerCase().includes(state.filterText.toLowerCase()) || i.content.toLowerCase().includes(state.filterText.toLowerCase());
-    const matchCat = state.filterCat === 'all' || i.cat === state.filterCat;
-    return matchText && matchCat;
-  });
-  if (!items.length) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔐</div><p>No vault items found. Add one to get started.</p></div>';
-    return;
-  }
-  const catMeta = {
-    password: { icon:'🔑', cls:'cat-password', label:'Password' },
-    note: { icon:'📝', cls:'cat-note', label:'Note' },
-    document: { icon:'📄', cls:'cat-document', label:'Document' },
-    message: { icon:'💌', cls:'cat-message', label:'Personal Message' },
-  };
-  grid.innerHTML = items.map(item => {
-    const m = catMeta[item.cat] || catMeta.note;
-    const preview = item.cat === 'password' ? '•'.repeat(Math.min(item.content.length, 18)) : item.content.slice(0,60)+(item.content.length>60?'…':'');
-    return `<div class="vault-item">
-      <div class="vault-item-header">
-        <div class="vault-cat-icon ${m.cls}">${m.icon}</div>
-        <div><div class="vault-title">${item.title}</div><div class="vault-cat">${m.label}</div></div>
+  <!-- Modal: Confirmation Prompt -->
+  <div class="modal-backdrop" id="modal-confirm" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="modal-window" style="max-width: 440px;">
+      <div class="modal-head">
+        <h3 id="confirm-title" style="color: var(--danger);">Confirm Action</h3>
+        <button class="btn-close-modal" onclick="closeModal('modal-confirm')" aria-label="Close modal">&times;</button>
       </div>
-      <div class="vault-preview">${preview}</div>
-      <div class="vault-footer">
-        <span class="vault-date">Added ${item.date}</span>
-        <button class="btn-icon" onclick="deleteVaultItem(${item.id})" title="Delete">🗑</button>
+      <div class="modal-body">
+        <p id="confirm-message" style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.5;"></p>
       </div>
-    </div>`;
-  }).join('');
-  document.getElementById('vault-badge').textContent = state.vaultItems.length;
-  document.getElementById('stat-vault').textContent = state.vaultItems.length;
-}
-
-function filterVault(val) { state.filterText = val; renderVault(); }
-function filterVaultCat(val) { state.filterCat = val; renderVault(); }
-
-function openVaultModal() { document.getElementById('vault-modal').classList.add('show'); }
-function closeVaultModal() {
-  document.getElementById('vault-modal').classList.remove('show');
-  ['vault-title','vault-content'].forEach(id => document.getElementById(id).value = '');
-}
-
-function addVaultItem() {
-  const title = document.getElementById('vault-title').value.trim();
-  const cat = document.getElementById('vault-cat').value;
-  const content = document.getElementById('vault-content').value.trim();
-  if (!title || !content) { showToast('⚠️','Please fill in all fields'); return; }
-  const now = new Date();
-  const date = now.toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
-  state.vaultItems.unshift({ id: state.nextId++, title, cat, content, date });
-  addLog(`Added vault item: ${title}`, 'vault');
-  closeVaultModal();
-  renderVault();
-  showToast('🔐', `"${title}" saved to vault`);
-}
-
-function deleteVaultItem(id) {
-  const item = state.vaultItems.find(i=>i.id===id);
-  state.vaultItems = state.vaultItems.filter(i=>i.id!==id);
-  if (item) addLog(`Deleted vault item: ${item.title}`, 'vault');
-  renderVault();
-  showToast('🗑️', 'Item removed from vault');
-}
-
-// ─── CONTACTS ───
-const avatarColors = ['#2dd4c0','#a78bfa','#f59e0b','#f87171','#60a5fa','#4ade80'];
-
-function renderContacts() {
-  const grid = document.getElementById('contacts-grid');
-  if (!state.contacts.length) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">👥</div><p>No trusted contacts yet. Add someone you trust.</p></div>';
-    document.getElementById('contacts-badge').textContent = '0';
-    document.getElementById('stat-contacts').textContent = '0';
-    return;
-  }
-  grid.innerHTML = state.contacts.map(c => {
-    const initials = c.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    return `<div class="contact-card">
-      <div class="contact-avatar" style="background:${c.color}22;color:${c.color}">${initials}</div>
-      <div class="contact-info">
-        <div class="contact-name">${c.name}</div>
-        <div class="contact-email">${c.email}</div>
-        <span class="contact-rel">${c.rel}</span>
-        <div class="contact-status">✅ Will be notified on trigger</div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeModal('modal-confirm')">Cancel</button>
+        <button type="button" class="btn-danger" id="confirm-accept-btn">Proceed</button>
       </div>
-      <button class="btn-icon" onclick="deleteContact(${c.id})" title="Remove">🗑</button>
-    </div>`;
-  }).join('');
-  document.getElementById('contacts-badge').textContent = state.contacts.length;
-  document.getElementById('stat-contacts').textContent = state.contacts.length;
-}
+    </div>
+  </div>
 
-function openContactModal() { document.getElementById('contact-modal').classList.add('show'); }
-function closeContactModal() {
-  document.getElementById('contact-modal').classList.remove('show');
-  ['contact-name','contact-email'].forEach(id => document.getElementById(id).value = '');
-}
+  <!-- Toast Notification Live Region -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-function addContact() {
-  const name = document.getElementById('contact-name').value.trim();
-  const email = document.getElementById('contact-email').value.trim();
-  const rel = document.getElementById('contact-rel').value;
-  if (!name || !email) { showToast('⚠️','Please fill in name and email'); return; }
-  const color = avatarColors[state.contacts.length % avatarColors.length];
-  state.contacts.push({ id: state.nextId++, name, email, rel, color });
-  addLog(`Added trusted contact: ${name}`, 'contact');
-  closeContactModal();
-  renderContacts();
-  showToast('👥', `${name} added as trusted contact`);
-}
+  <!-- =======================================================
+       DATA AND LOGIC ENGINE
+       ======================================================= -->
+  <script>
+    const STORAGE_KEY = 'DAM_DATA_STORE_UNIVERSAL_V1';
 
-function deleteContact(id) {
-  const c = state.contacts.find(x=>x.id===id);
-  state.contacts = state.contacts.filter(x=>x.id!==id);
-  if (c) addLog(`Removed trusted contact: ${c.name}`, 'contact');
-  renderContacts();
-  showToast('🗑️', 'Contact removed');
-}
+    const defaultState = {
+      currentUser: {
+        name: 'Alex Morgan',
+        email: 'alex.morgan@example.com'
+      },
+      settings: {
+        inactivityDays: 30,
+        reminderBeforeTrigger: true,
+        pushNotifications: true,
+        emailNotifications: true,
+        twoFactor: false,
+        loginAlerts: true
+      },
+      vaultItems: [
+        {
+          id: 'v-1',
+          title: 'Gmail Account',
+          category: 'Password',
+          content: 'superSecr3tLegacyPass#2025!992',
+          dateAdded: '2025-01-15'
+        },
+        {
+          id: 'v-2',
+          title: 'Letter to Family',
+          category: 'Personal Message',
+          content: 'My dearest family, if you are reading this, please know how deeply I have loved every shared memory. Everything you need to be at ease is organized here.',
+          dateAdded: '2025-02-10'
+        },
+        {
+          id: 'v-3',
+          title: 'Insurance Policy',
+          category: 'Document',
+          content: 'Policy #NX-99381-01 Prudential Life Assurance. Original certificates physically located in the library safe box #4.',
+          dateAdded: '2025-02-28'
+        },
+        {
+          id: 'v-4',
+          title: 'Bank Account Details',
+          category: 'Note',
+          content: 'Apex Federal Private Wealth: Account 8839-2019-441. Primary beneficiary listed with power of attorney.',
+          dateAdded: '2025-03-01'
+        }
+      ],
+      contacts: [
+        {
+          id: 'c-1',
+          name: 'Priya Sharma',
+          email: 'priya.sharma@example.com',
+          relationship: 'Spouse',
+          color: '#ec4899'
+        },
+        {
+          id: 'c-2',
+          name: 'Rahul Sharma',
+          email: 'rahul.sharma@example.com',
+          relationship: 'Sibling',
+          color: '#3b82f6'
+        }
+      ],
+      activityLog: [
+        {
+          id: 'l-1',
+          type: 'auth',
+          dotColor: 'dot-green',
+          text: 'Successful login verified via authenticated browser token',
+          user: 'Alex Morgan',
+          time: '10 mins ago'
+        },
+        {
+          id: 'l-2',
+          type: 'vault',
+          dotColor: 'dot-purple',
+          text: 'Vault item "Bank Account Details" updated with encryption handshake',
+          user: 'Alex Morgan',
+          time: '1 hour ago'
+        },
+        {
+          id: 'l-3',
+          type: 'contacts',
+          dotColor: 'dot-amber',
+          text: 'Trusted Contact "Rahul Sharma" designated with Succession Rights',
+          user: 'Alex Morgan',
+          time: 'Yesterday'
+        },
+        {
+          id: 'l-4',
+          type: 'settings',
+          dotColor: 'dot-blue',
+          text: 'Inactivity threshold adjusted to 30 days window',
+          user: 'System',
+          time: '3 days ago'
+        },
+        {
+          id: 'l-5',
+          type: 'vault',
+          dotColor: 'dot-purple',
+          text: 'New encrypted payload "Letter to Family" committed to secure storage',
+          user: 'Alex Morgan',
+          time: '1 week ago'
+        },
+        {
+          id: 'l-6',
+          type: 'auth',
+          dotColor: 'dot-green',
+          text: 'Cryptographic master passphrase initialized and vault partitioned',
+          user: 'Alex Morgan',
+          time: '2 weeks ago'
+        }
+      ]
+    };
 
-// ─── ACTIVITY LOG ───
-const logColors = { auth:'#2dd4c0', vault:'#a78bfa', contact:'#f59e0b', settings:'#60a5fa', trigger:'#f87171' };
+    let appState = loadState();
 
-function addLog(action, type) {
-  const now = new Date();
-  const time = 'Today, ' + now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-  state.logs.unshift({ action, type, time, user:'You' });
-  renderLog();
-}
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+      } catch (e) {
+        console.warn('LocalStorage not available', e);
+      }
+      return JSON.parse(JSON.stringify(defaultState));
+    }
 
-function renderLog() {
-  const list = document.getElementById('log-list');
-  list.innerHTML = state.logs.map(log => `
-    <div class="log-item">
-      <div class="log-dot" style="background:${logColors[log.type]||'#8b93a8'}"></div>
-      <div class="log-action">${log.action}</div>
-      <div class="log-meta">
-        <div class="log-user">${log.user}</div>
-        <div>${log.time}</div>
-      </div>
-    </div>`).join('');
-}
+    function persistState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        console.warn('Could not persist to storage', e);
+      }
+    }
 
-// ─── SETTINGS ───
-function toggleSetting(btn) { btn.classList.toggle('on'); }
+    function addLogEntry(text, type = 'vault', customUser = null) {
+      const colorMap = {
+        auth: 'dot-green',
+        vault: 'dot-purple',
+        contacts: 'dot-amber',
+        settings: 'dot-blue',
+        trigger: 'dot-red'
+      };
 
-function saveSettings() {
-  const days = document.getElementById('inactivity-days').value;
-  state.settings.inactivityDays = parseInt(days);
-  addLog(`Changed inactivity period to ${days} days`, 'settings');
-  showToast('✅', 'Settings saved');
-}
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' today';
 
-function manualTrigger() {
-  if (confirm('⚠️ This will immediately notify all your trusted contacts and grant them access. Are you sure?')) {
-    addLog('Manual emergency trigger activated — contacts notified', 'trigger');
-    showToast('🚨', 'Emergency trigger sent to all contacts');
-  }
-}
+      const entry = {
+        id: 'log-' + Date.now(),
+        type: type,
+        dotColor: colorMap[type] || 'dot-green',
+        text: text,
+        user: customUser || appState.currentUser.name || 'Alex Morgan',
+        time: timeStr
+      };
 
-// ─── TOAST ───
-let toastTimer;
-function showToast(icon, msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toast-msg').textContent = msg;
-  document.querySelector('.toast-icon').textContent = icon + ' ';
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
-}
+      appState.activityLog.unshift(entry);
+      persistState();
+      renderActivityLog();
+    }
 
-// ─── INIT ───
-function renderAll() { renderVault(); renderContacts(); renderLog(); }
+    /* =======================================================
+       TOAST SYSTEM
+       ======================================================= */
+    function showToast(emoji, message, variant = 'teal') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${variant !== 'teal' ? 'toast-' + variant : ''}`;
+      toast.setAttribute('role', 'status');
+      toast.innerHTML = `
+        <span style="font-size: 1.15rem; line-height: 1;" aria-hidden="true">${emoji}</span>
+        <span>${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
 
-// Close modals on backdrop click
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('show'); });
-});
-</script>
+      setTimeout(() => {
+        toast.style.animation = 'toastOut 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+        setTimeout(() => toast.remove(), 280);
+      }, 3000);
+    }
+
+    /* =======================================================
+       MODALS & KEYBOARD ACCESSIBILITY
+       ======================================================= */
+    let lastFocusedElement = null;
+
+    function openModal(id) {
+      lastFocusedElement = document.activeElement;
+      const modal = document.getElementById(id);
+      modal.classList.add('active');
+      const focusable = modal.querySelector('button, input, select, textarea');
+      if (focusable) focusable.focus();
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.remove('active');
+      if (lastFocusedElement) lastFocusedElement.focus();
+    }
+
+    // Close on backdrop click & ESC key handler
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+          backdrop.classList.remove('active');
+          if (lastFocusedElement) lastFocusedElement.focus();
+        }
+      });
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-backdrop.active').forEach(m => m.classList.remove('active'));
+        toggleSidebarDrawer(false);
+      }
+    });
+
+    function showConfirmDialog({ title, message, btnText, onConfirm }) {
+      document.getElementById('confirm-title').innerText = title || 'Confirm Action';
+      document.getElementById('confirm-message').innerText = message || 'Are you sure?';
+      const confirmBtn = document.getElementById('confirm-accept-btn');
+      confirmBtn.innerText = btnText || 'Proceed';
+      
+      const newBtn = confirmBtn.cloneNode(true);
+      confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+
+      newBtn.addEventListener('click', () => {
+        closeModal('modal-confirm');
+        if (typeof onConfirm === 'function') onConfirm();
+      });
+
+      openModal('modal-confirm');
+    }
+
+    /* =======================================================
+       DRAWER NAVIGATION (FOR SMALL VIEWPORTS)
+       ======================================================= */
+    function toggleSidebarDrawer(forceState) {
+      const sidebar = document.getElementById('app-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const trigger = document.getElementById('mobile-menu-trigger');
+      const isCurrentlyOpen = sidebar.classList.contains('open');
+      const shouldOpen = forceState !== undefined ? forceState : !isCurrentlyOpen;
+
+      if (shouldOpen) {
+        sidebar.classList.add('open');
+        backdrop.classList.add('active');
+        if (trigger) trigger.setAttribute('aria-expanded', 'true');
+      } else {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('active');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    /* =======================================================
+       AUTH / LOGIN
+       ======================================================= */
+    function switchAuthTab(tab) {
+      const signinBtn = document.getElementById('tab-signin');
+      const signupBtn = document.getElementById('tab-signup');
+      const signinForm = document.getElementById('form-signin');
+      const signupForm = document.getElementById('form-signup');
+
+      if (tab === 'signin') {
+        signinBtn.classList.add('active');
+        signinBtn.setAttribute('aria-selected', 'true');
+        signupBtn.classList.remove('active');
+        signupBtn.setAttribute('aria-selected', 'false');
+        signinForm.style.display = 'flex';
+        signupForm.style.display = 'none';
+      } else {
+        signupBtn.classList.add('active');
+        signupBtn.setAttribute('aria-selected', 'true');
+        signinBtn.classList.remove('active');
+        signinBtn.setAttribute('aria-selected', 'false');
+        signupForm.style.display = 'flex';
+        signinForm.style.display = 'none';
+      }
+    }
+
+    function handleAuthSubmit(event, mode) {
+      event.preventDefault();
+      let userName = 'Alex Morgan';
+      let userEmail = 'alex.morgan@example.com';
+
+      if (mode === 'signup') {
+        const nameVal = document.getElementById('signup-name').value.trim();
+        const emailVal = document.getElementById('signup-email').value.trim();
+        if (nameVal) userName = nameVal;
+        if (emailVal) userEmail = emailVal;
+      } else {
+        const emailVal = document.getElementById('signin-email').value.trim();
+        if (emailVal) {
+          userEmail = emailVal;
+          userName = emailVal.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+      }
+
+      appState.currentUser = { name: userName, email: userEmail };
+      persistState();
+      addLogEntry(`User authenticated into session (${userEmail})`, 'auth', userName);
+
+      // Transition to Dashboard
+      document.getElementById('auth-screen').style.display = 'none';
+      const appRoot = document.getElementById('app-container');
+      appRoot.style.display = 'flex';
+      appRoot.setAttribute('aria-hidden', 'false');
+
+      updateUserUI();
+      renderAllScreens();
+      navigateTo('dashboard');
+      showToast('🔓', `Welcome back, ${userName.split(' ')[0]}!`, 'teal');
+    }
+
+    function signOut() {
+      addLogEntry('User logged out of terminal', 'auth');
+      const appRoot = document.getElementById('app-container');
+      appRoot.style.display = 'none';
+      appRoot.setAttribute('aria-hidden', 'true');
+      document.getElementById('auth-screen').style.display = 'flex';
+      toggleSidebarDrawer(false);
+      showToast('👋', 'You have been safely signed out.', 'teal');
+    }
+
+    function updateUserUI() {
+      const user = appState.currentUser || { name: 'Alex Morgan' };
+      const firstName = user.name.split(' ')[0] || 'Alex';
+      const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'AM';
+
+      document.getElementById('nav-user-name').innerText = user.name;
+      document.getElementById('nav-user-avatar').innerText = initials;
+
+      const hour = new Date().getHours();
+      let timeGreeting = 'Good morning';
+      if (hour >= 12 && hour < 17) timeGreeting = 'Good afternoon';
+      else if (hour >= 17 || hour < 4) timeGreeting = 'Good evening';
+
+      document.getElementById('dashboard-greeting').innerText = `${timeGreeting}, ${firstName}`;
+    }
+
+    /* =======================================================
+       SCREEN ROUTING
+       ======================================================= */
+    function navigateTo(screenId) {
+      // Update sidebar nav items
+      document.querySelectorAll('.sidebar .nav-item').forEach(item => {
+        if (item.getAttribute('data-screen') === screenId) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      // Update mobile bottom nav items
+      document.querySelectorAll('.mobile-bottom-btn').forEach(btn => {
+        if (btn.getAttribute('data-screen') === screenId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Switch active page
+      document.querySelectorAll('.screen-page').forEach(page => {
+        page.classList.remove('active-page');
+      });
+
+      const target = document.getElementById(`screen-${screenId}`);
+      if (target) {
+        target.classList.add('active-page');
+      }
+
+      // Close drawer if open on mobile
+      toggleSidebarDrawer(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateCountsAndBadges() {
+      const vCount = appState.vaultItems.length;
+      const cCount = appState.contacts.length;
+      const days = appState.settings.inactivityDays || 30;
+
+      // Badges in sidebar & mobile bar
+      document.getElementById('badge-vault-count').innerText = vCount;
+      document.getElementById('badge-contacts-count').innerText = cCount;
+      document.getElementById('bottom-vault-count').innerText = vCount;
+      document.getElementById('bottom-contacts-count').innerText = cCount;
+
+      // Dashboard stat cards
+      document.getElementById('dash-vault-count').innerText = vCount;
+      document.getElementById('dash-contacts-count').innerText = cCount;
+      document.getElementById('dash-inactivity-days').innerText = `${days}d`;
+      document.getElementById('dash-inactivity-badge').innerText = `${days} days`;
+    }
+
+    /* =======================================================
+       SCREEN 3: VAULT
+       ======================================================= */
+    function renderVault(itemsToRender = null) {
+      const container = document.getElementById('vault-items-container');
+      const items = itemsToRender || appState.vaultItems;
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto; color: var(--text-subtle);"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M12 15v3"/></svg>
+            <h4 style="margin-top: 12px; color: #fff;">No Vault Items Found</h4>
+            <p>Try adjusting your search criteria or store a new encrypted item.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map(item => {
+        let catClass = 'cat-password';
+        let badgeClass = 'badge-teal';
+        let iconSvg = '';
+
+        const cat = item.category || 'Password';
+        if (cat === 'Password') {
+          catClass = 'cat-password';
+          badgeClass = 'badge-teal';
+          iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>`;
+        } else if (cat === 'Note') {
+          catClass = 'cat-note';
+          badgeClass = 'badge-amber';
+          iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/></svg>`;
+        } else if (cat === 'Document') {
+          catClass = 'cat-document';
+          badgeClass = 'badge-purple';
+          iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/></svg>`;
+        } else {
+          catClass = 'cat-personalmessage';
+          badgeClass = 'badge-coral';
+          iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`;
+        }
+
+        let previewText = '';
+        if (cat === 'Password') {
+          previewText = '••••••••••••••••••••';
+        } else {
+          previewText = item.content.length > 60 ? item.content.substring(0, 60) + '...' : item.content;
+        }
+
+        return `
+          <div class="vault-card" tabindex="0">
+            <div>
+              <div class="vault-card-head">
+                <div class="cat-icon-container ${catClass}">
+                  ${iconSvg}
+                </div>
+                <div class="vault-card-titles">
+                  <div class="vault-card-title">${escapeHtml(item.title)}</div>
+                  <span class="badge ${badgeClass}">${cat}</span>
+                </div>
+              </div>
+              <div class="vault-card-content">${escapeHtml(previewText)}</div>
+            </div>
+            <div class="vault-card-footer">
+              <span>Added ${item.dateAdded || 'Recently'}</span>
+              <button class="card-action-btn" onclick="deleteVaultItem('${item.id}')" aria-label="Delete ${escapeHtml(item.title)}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openAddVaultModal() {
+      document.getElementById('vault-new-title').value = '';
+      document.getElementById('vault-new-category').value = 'Password';
+      document.getElementById('vault-new-content').value = '';
+      openModal('modal-vault');
+    }
+
+    function handleSaveVaultItem(event) {
+      event.preventDefault();
+      const title = document.getElementById('vault-new-title').value.trim();
+      const category = document.getElementById('vault-new-category').value;
+      const content = document.getElementById('vault-new-content').value.trim();
+
+      if (!title || !content) return;
+
+      const newItem = {
+        id: 'v-' + Date.now(),
+        title,
+        category,
+        content,
+        dateAdded: new Date().toISOString().split('T')[0]
+      };
+
+      appState.vaultItems.unshift(newItem);
+      persistState();
+      updateCountsAndBadges();
+      renderVault();
+      closeModal('modal-vault');
+
+      addLogEntry(`Vault item "${title}" stored with AES-256`, 'vault');
+      showToast('🔒', `Vault item "${title}" saved`, 'teal');
+    }
+
+    function deleteVaultItem(id) {
+      const item = appState.vaultItems.find(i => i.id === id);
+      const title = item ? item.title : 'Item';
+
+      showConfirmDialog({
+        title: 'Delete Vault Item',
+        message: `Are you sure you want to permanently delete "${title}"? Decryption keys will be immediately shredded.`,
+        btnText: 'Delete Item',
+        onConfirm: () => {
+          appState.vaultItems = appState.vaultItems.filter(i => i.id !== id);
+          persistState();
+          updateCountsAndBadges();
+          handleVaultFilter();
+          addLogEntry(`Vault item "${title}" deleted`, 'vault');
+          showToast('🗑️', `Vault item "${title}" deleted`, 'amber');
+        }
+      });
+    }
+
+    function handleVaultSearch() {
+      handleVaultFilter();
+    }
+
+    function handleVaultFilter() {
+      const query = document.getElementById('vault-search-input').value.toLowerCase();
+      const cat = document.getElementById('vault-category-filter').value;
+
+      const filtered = appState.vaultItems.filter(item => {
+        const matchesQuery = item.title.toLowerCase().includes(query);
+        const matchesCat = (cat === 'All') || (item.category === cat);
+        return matchesQuery && matchesCat;
+      });
+
+      renderVault(filtered);
+    }
+
+    /* =======================================================
+       SCREEN 4: TRUSTED CONTACTS
+       ======================================================= */
+    const avatarColors = ['#ec4899', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#14b8a6'];
+
+    function renderContacts() {
+      const container = document.getElementById('contacts-container');
+      if (appState.contacts.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto; color: var(--text-subtle);"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/></svg>
+            <h4 style="margin-top: 12px; color: #fff;">No Trusted Contacts Assigned</h4>
+            <p>Add nominees who will automatically be granted access directives on trigger.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = appState.contacts.map((c, index) => {
+        const initials = c.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+        const color = c.color || avatarColors[index % avatarColors.length];
+
+        let badgeStyle = 'badge-teal';
+        if (c.relationship === 'Spouse') badgeStyle = 'badge-coral';
+        else if (c.relationship === 'Sibling') badgeStyle = 'badge-purple';
+        else if (c.relationship === 'Lawyer') badgeStyle = 'badge-amber';
+
+        return `
+          <div class="contact-card" tabindex="0">
+            <div class="contact-header">
+              <div class="contact-avatar" style="background: ${color};" aria-hidden="true">
+                ${initials}
+              </div>
+              <div class="contact-info">
+                <div class="contact-name">${escapeHtml(c.name)}</div>
+                <div class="contact-email">${escapeHtml(c.email)}</div>
+              </div>
+            </div>
+
+            <div class="contact-status-line">
+              <span class="contact-status-dot" aria-hidden="true"></span>
+              <span>Will be notified on trigger</span>
+            </div>
+
+            <div class="contact-footer">
+              <span class="badge ${badgeStyle}">${escapeHtml(c.relationship)}</span>
+              <button class="card-action-btn" onclick="removeContact('${c.id}')" aria-label="Remove contact ${escapeHtml(c.name)}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openAddContactModal() {
+      document.getElementById('contact-new-name').value = '';
+      document.getElementById('contact-new-email').value = '';
+      document.getElementById('contact-new-rel').value = 'Spouse';
+      openModal('modal-contact');
+    }
+
+    function handleSaveContact(event) {
+      event.preventDefault();
+      const name = document.getElementById('contact-new-name').value.trim();
+      const email = document.getElementById('contact-new-email').value.trim();
+      const rel = document.getElementById('contact-new-rel').value;
+
+      if (!name || !email) return;
+
+      const newContact = {
+        id: 'c-' + Date.now(),
+        name,
+        email,
+        relationship: rel,
+        color: avatarColors[Math.floor(Math.random() * avatarColors.length)]
+      };
+
+      appState.contacts.push(newContact);
+      persistState();
+      updateCountsAndBadges();
+      renderContacts();
+      closeModal('modal-contact');
+
+      addLogEntry(`Trusted Contact "${name}" (${rel}) added`, 'contacts');
+      showToast('👤', `Trusted contact "${name}" added`, 'teal');
+    }
+
+    function removeContact(id) {
+      const contact = appState.contacts.find(c => c.id === id);
+      const name = contact ? contact.name : 'Contact';
+
+      showConfirmDialog({
+        title: 'Remove Trusted Contact',
+        message: `Revoke emergency vault access privileges for "${name}"?`,
+        btnText: 'Remove Contact',
+        onConfirm: () => {
+          appState.contacts = appState.contacts.filter(c => c.id !== id);
+          persistState();
+          updateCountsAndBadges();
+          renderContacts();
+          addLogEntry(`Trusted Contact "${name}" removed`, 'contacts');
+          showToast('👤', `Contact "${name}" removed`, 'amber');
+        }
+      });
+    }
+
+    /* =======================================================
+       SCREEN 5: ACTIVITY LOG
+       ======================================================= */
+    function renderActivityLog() {
+      const container = document.getElementById('activity-log-container');
+      if (appState.activityLog.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="border: none;">
+            <p>No activity logs recorded yet.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = appState.activityLog.map(entry => {
+        return `
+          <div class="log-entry">
+            <div class="log-left">
+              <div class="log-dot ${entry.dotColor}" aria-hidden="true"></div>
+              <div class="log-text-wrap">
+                <span class="log-desc">${escapeHtml(entry.text)}</span>
+                <span class="log-user">${escapeHtml(entry.user || 'Alex Morgan')}</span>
+              </div>
+            </div>
+            <span class="log-time">${escapeHtml(entry.time)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* =======================================================
+       SCREEN 6: SETTINGS
+       ======================================================= */
+    function loadSettingsForm() {
+      const s = appState.settings;
+      document.getElementById('setting-inactivity-days').value = s.inactivityDays || 30;
+      document.getElementById('setting-reminder-toggle').checked = s.reminderBeforeTrigger !== false;
+      document.getElementById('setting-push-toggle').checked = s.pushNotifications !== false;
+      document.getElementById('setting-email-toggle').checked = s.emailNotifications !== false;
+      document.getElementById('setting-2fa-toggle').checked = !!s.twoFactor;
+      document.getElementById('setting-login-alert-toggle').checked = s.loginAlerts !== false;
+    }
+
+    function saveSettings() {
+      const days = parseInt(document.getElementById('setting-inactivity-days').value, 10) || 30;
+      appState.settings = {
+        inactivityDays: days,
+        reminderBeforeTrigger: document.getElementById('setting-reminder-toggle').checked,
+        pushNotifications: document.getElementById('setting-push-toggle').checked,
+        emailNotifications: document.getElementById('setting-email-toggle').checked,
+        twoFactor: document.getElementById('setting-2fa-toggle').checked,
+        loginAlerts: document.getElementById('setting-login-alert-toggle').checked
+      };
+
+      persistState();
+      updateCountsAndBadges();
+      addLogEntry(`Settings updated (Threshold: ${days} days)`, 'settings');
+      showToast('⚙️', 'Settings saved successfully', 'teal');
+    }
+
+    function confirmEmergencyTrigger() {
+      showConfirmDialog({
+        title: 'EXECUTE EMERGENCY TRIGGER',
+        message: 'WARNING: This simulates emergency release directives. Vault access instructions will be dispatched to all trusted nominees immediately.',
+        btnText: 'Confirm Trigger',
+        onConfirm: () => {
+          addLogEntry('CRITICAL: Emergency Trigger fired! Nominees alerted.', 'trigger');
+          showToast('🚨', 'Emergency Trigger Executed! Nominees notified.', 'danger');
+        }
+      });
+    }
+
+    function confirmDeleteAccount() {
+      showConfirmDialog({
+        title: 'Purge Account & Vault',
+        message: 'Are you sure? This will wipe all saved secrets, contacts, and reset the vault to factory defaults.',
+        btnText: 'Purge Everything',
+        onConfirm: () => {
+          localStorage.removeItem(STORAGE_KEY);
+          appState = JSON.parse(JSON.stringify(defaultState));
+          persistState();
+          signOut();
+          showToast('⚠️', 'Account data purged completely.', 'amber');
+        }
+      });
+    }
+
+    /* =======================================================
+       HELPERS & BOOTSTRAP
+       ======================================================= */
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderAllScreens() {
+      updateCountsAndBadges();
+      renderVault();
+      renderContacts();
+      renderActivityLog();
+      loadSettingsForm();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('auth-screen').style.display = 'flex';
+      document.getElementById('app-container').style.display = 'none';
+      renderAllScreens();
+    });
+  </script>
 </body>
 </html>
